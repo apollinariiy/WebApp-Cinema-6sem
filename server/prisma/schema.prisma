@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id           Int          @id @default(autoincrement())
+  surname      String
+  name         String
+  email        String
+  phone        String 
+  password     String
+  role         String
+  tokens       Tokens[]    
+  reservations Reservations[] 
+}
+
+model Tokens {
+  id            Int     @id @default(autoincrement())
+  user          Users   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        Int
+  refreshToken  String
+}
+
+model Movies {
+  id       Int       @id @default(autoincrement())
+  title    String
+  duration Int
+  genre    String 
+  ageLimit Int 
+  description String 
+  image    String
+  sessions Sessions[] 
+}
+
+model Sessions {
+  id      Int     @id @default(autoincrement())
+  date    DateTime
+  movie   Movies  @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  movieId Int
+  hall    Halls   @relation(fields: [hallId], references: [id], onDelete: Cascade)
+  hallId  Int
+  reservations Reservations[] 
+}
+
+model Halls {
+  id       Int       @id @default(autoincrement())
+  hallName String
+  rowsCount Int 
+  seatsCount Int
+  price Int
+  sessions Sessions[] 
+}
+
+model Reservations {
+  id          Int       @id @default(autoincrement())
+  session     Sessions  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId   Int
+  user        Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int
+  RowNumber   Int 
+  SeatNumber  Int 
+}
